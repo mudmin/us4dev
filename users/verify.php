@@ -71,6 +71,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       <p class="text-center">After registration, you should have received a verification email. Sometimes these emails end up in your spam folder.
         Please be sure to check there. If you did not recieve an email you can resend it by entering your email address below, and then click resend.
       </p>
+      <h1 class="text-center">If you feel that you have reached this message in error, please click the link in your email one more time.</h1>
       <div class="col-md-8 col-md-offset-2">
         <form class="" action="verify.php" method="post">
           <span class="bg-danger"><?=display_errors($errors);?></span>

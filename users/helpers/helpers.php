@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //echo "helpers included";
 require_once("us_helpers.php");
 require_once("users_online.php");
+require_once("audit.php");
 require_once("language.php");
 
 
