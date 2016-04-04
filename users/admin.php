@@ -51,60 +51,6 @@ $level_count = $levelsQ->count();
 $settingsQ = $db->query("SELECT * FROM settings");
 $settings = $settingsQ->first();
 
-// count the number of logins in the last 24 hours
-$numlogins24 = 0;
-$numlogins_lookback = 86400;
-$now = time();
-$getnumlogins = $now - $numlogins_lookback;
-if($getnumloginscount = countLoginsSince(1,$getnumlogins)){
-	$numlogins24 = $getnumloginscount;
-	}
-
-  // get notification of new events
-  $noticount = 0;
-  $uid = $user->data()->id; // user id
-  $now = time();
-
-  	if (isset($_GET['n']))
-  		{
-  		$_SESSION['ll'] = time();
-  		$_SESSION['lt'] = time();
-  		}
-  	else
-  		{
-  		$prev_login = $_SESSION['ll'];
-  		$this_sessi = $_SESSION['lt'];
-
-  		if($not1 = fetchAllLatest($uid,$this_sessi,$now,3))
-  					{
-  					$noticount = count($not1);
-  					}
-  		}
-
-  $display_activitydata = '';
-  $activityData = fetchAllAudit();
-  // dnd($activityData);
-  //Cycle through activity data
-    foreach ($activityData as $v1)
-  		{
-  		$accuserid = ($v1->audit_userid == 666) ? 0 : $v1->audit_userid; // do something with baddies
-  		$accuserip = $v1->audit_userip;
-  		$accagodate = ago($v1->audit_timestamp);
-  		$accaudate = date("d/M/Y G:i:s",$v1->audit_timestamp);
-  		$adisp_name = ($v1->username == "") ? "Unknown" : $v1->username;
-  		$adisp_rowc = ($v1->audit_eventcode == 3) ? "alert alert-danger" : '';
-  		$adisp_rowc = (($adisp_rowc == '') && ($v1->audit_eventcode == 5)) ? "alert alert-success" : $adisp_rowc;
-  		$display_activitydata .= '
-  		<tr class="'.$adisp_rowc.'">
-  		<td>'.$accagodate.'</td>
-  		<td><a href="admin_user.php?id='.$accuserid.'">'.$adisp_name.'</a></td>
-  		<td>'.$v1->audit_eventcode .'</td>
-  		<td>'.$v1->audit_action .'</td>
-  		<td>'.$accuserip.'</td>
-  		</tr>
-  		';
-  		}
-//if $_POST
 if(!empty($_POST['settings'])){
   $token = $_POST['csrf'];
 	if(!Token::check($token)){
@@ -192,179 +138,73 @@ Redirect::to('admin.php');
 }
 
 ?>
-<div id="page-wrapper">
+<div id="page-wrapper"> <!-- leave in place for full-screen backgrounds etc -->
 
-  <div class="container-fluid">
+  <div class="container"> <!-- -fluid -->
 
     <!-- Page Heading -->
-    <div class="row">
-      <div class="col-lg-12">
-        <h1 class="page-header">
-          Administrator Control Panel
-        </h1>
-    </div>
+	<div class="row">
+		<div class="col-md-4">
+			<h1 class="hidden-xs ">Dashboard</h1>
+			<h1 class="visible-xs ">Dash</h1>
+		</div>
+		
+		<div class="col-md-8">
+		<h1 class="pull-right">Kinda wasted space</h1>
+		</div>
+	</div>
 
-    <!-- /.row -->
+		
+	<!-- Top Admin Panels -->
 
-<!-- Top Admin Panels -->
-<?php require_once("views/admin_panel/_top_panels.php");?>
-<?php require_once("views/admin_panel/_audit_table.php");?>
-<?php if($settings->css_sample == 1){     require_once("views/admin_panel/_css_test.php");}?>
-<?php require_once("views/admin_panel/_css_settings.php");?>
-<?php require_once("views/admin_panel/_main_settings.php");?>
+	
+	<div>
 
-    <!-- footers -->
-    <?php require_once("includes/userspice/us_page_footer.php"); // the final html footer copyright row + the external js calls ?>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs " role="tablist">
+    <li class="active"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab" >Activity</a></li>
+    <li ><a href="#settings2" aria-controls="settings2" role="tab" data-toggle="tab">Main Settings</a></li>
+    <li ><a href="#css" aria-controls="css" role="tab" data-toggle="tab">Choose CSS</a></li>
+  </ul>
+  <!-- Tab panes -->
+	<div class="tab-content us-dash-panels">
+		<div role="tabpanel" class="tab-pane active" id="settings">	<?php require_once("views/admin_panel/_top_panels.php");?><?php require_once("views/admin_panel/_main_settings.php");?>		<div id="times"></div></div>
+		<div role="tabpanel" class="tab-pane" id="settings2"><?php require_once("views/admin_panel/_main_settings2.php");?></div>
+		<div role="tabpanel" class="tab-pane" id="css">
+			<?php require_once("views/admin_panel/_css_settings.php");?>
+			<?php if($settings->css_sample == 1){     require_once("views/admin_panel/_css_test.php");}?>		</div>
+	   </div>
 
-    <!-- Place any per-page javascript here -->
-    <script type="text/javascript" src="js/plugins/flot/jquery.flot.js"></script>
-    <script type="text/javascript" src="js/plugins/flot/jquery.flot.tooltip.min.js"></script>
-    <script type="text/javascript" src="js/plugins/flot/jquery.flot.resize.js"></script>
-    <script type="text/javascript" src="js/plugins/flot/jquery.flot.pie.js"></script>
+	</div>
 
+
+
+	
+	
+    </div> <!-- /container -->
+
+</div> <!-- /#page-wrapper -->
+
+
+<!-- footers -->
+<?php require_once("includes/userspice/us_page_footer.php"); // the final html footer copyright row + the external js calls ?>
+
+<!-- Place any per-page javascript here -->
 	<script type="text/javascript">
-	$(document).ready(function(){
+	$(document).ready(function(){	
 
-	// Cheeky animation http://codepen.io/shivasurya/pen/FatiB
-	$('.count').each(function () {
-		$(this).prop('Counter',0).animate({
-			Counter: $(this).text()
-		}, {
-			duration: 1600,
-			easing: 'swing',
-			step: function (now) {
-				$(this).text(Math.ceil(now));
-			}
-		});
-	});
-
-
-// Example graphs
-// ------------------------------------------------------------------------- graph 0
-// Signups
-		var options = {
-
-			xaxis: {
-				mode: "time",
-				timeformat: "%m/%d",
-				},
-			yaxis: {
-				tickSize : 1,
-				tickDecimals: 0
-				},
-        series: {
-            lines: { show: true },
-            points: {
-                radius: 12,
-                show: true,
-                fill: true
-            }
-        }
-
-		};
-
-		$.ajax({
-				url: 'json_chart.php',
-				contentType: 'application/json; charset=utf-8',
-				type: 'GET',
-				data: {"chartid" : 0},
-				dataType: 'json',
-				success: function (data) {
-				$.plot('#flotcontainer0', data, options);
-					},
-				failure: function (response) {
-					alert(response.d);
-				}
-			});
-
-// -------------------------------------------------------------------------
-// Logins
-		$.ajax({
-				url: 'json_chart.php',
-				contentType: "application/json; charset=utf-8",
-				type: "GET",
-				data: {"chartid" : 2},
-				dataType: 'json',
-				success: function (data) {
-
-				$.plot($("#flotcontainer2"), data, {
-					xaxis: { mode: "time"},
-					yaxis: {tickSize : 1,tickDecimals: 0},
-					series: { bars: { show: true } }
-				});
-
-					},
-				failure: function (response) {
-					alert(response.d);
-				}
-			});
-// -------------------------------------------------------------------------
-// The bottom left pie
-		$.ajax({
-				url: 'json_chart.php',
-				contentType: "application/json; charset=utf-8",
-				type: "POST",
-				dataType: 'json',
-				success: function (data) {
-				$.plot($("#flotcontainer"), data, {
-							series: {
-								pie: {
-									show: true,
-									radius: 500,
-									label: {
-										show: true,
-										radius: 3/4,
-										background: {
-											opacity: 0.5,
-											color: '#000'
-										}
-									}
-								}
-							},
-							legend: {
-								show: false
-							}
-						});
-					},
-				failure: function (response) {
-					alert(response.d);
-				}
-			});
-// -------------------------------------------------------------------------
-// The bottom right pie
-		$.ajax({
-				url: 'json_chart.php',
-				contentType: "application/json; charset=utf-8",
-				type: "GET",
-				data: {"chartid" : 1},
-				dataType: 'json',
-				success: function (data) {
-				$.plot($("#flotcontainer1"), data, {
-							series: {
-								pie: {
-									show: true,
-									radius: 1,
-									label: {
-										show: true,
-										radius: 3/4,
-										background: {
-											opacity: 0.5,
-											color: '#000'
-										}
-									}
-								}
-							},
-							legend: {
-								show: false
-							}
-						});
-					},
-				failure: function (response) {
-					alert(response.d);
-				}
-			});
-
-// -------------------------------------------------------------------------
+	$("#times").load("times.php" );	
+	
+	var timesRefresh = setInterval(function(){
+	$("#times").load("times.php" );	
+	}, 30000); 
+	
+	
+  $('[data-toggle="tooltip"]').tooltip();
+	$('[data-toggle="popover"]').popover();
+// -------------------------------------------------------------------------		
 		});
 	</script>
-    <?php require_once("includes/userspice/us_html_footer.php"); // currently just the closing /body and /html ?>
+
+
+<?php require_once("includes/userspice/us_html_footer.php"); // currently just the closing /body and /html ?>

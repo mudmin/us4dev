@@ -108,15 +108,11 @@ if ($response != null && $response->success) {
 
 <div id="page-wrapper">
 
-  <div class="container-fluid">
+  <div class="container">
 
-    <!-- Page Heading -->
-    <div class="row">
-      <div class="col-sm-12">
-        <div class="class col-sm-3"></div>
-        <div class="class col-sm-6">
-          <?php include 'views/login/_login_form.php'; ?>
-        </div>
+         <?php include 'views/login/_login_form.php'; ?>
+
+		 
       </div>
     </div>
 
